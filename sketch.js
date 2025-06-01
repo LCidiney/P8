@@ -1,6 +1,8 @@
+const palettes = require("./palettes");
+
 function setup() {
-  createCanvas(2000, 1575);
-  frameRate(10);
+  createCanvas(1365, 650, WEBGL);
+  frameRate(5);
   angleMode(DEGREES);
   sldAngle = createSlider(0, 90, 45, 5);
   sldSize = createSlider(0, 0.75, 0.2, 0.05);
@@ -8,14 +10,13 @@ function setup() {
 
 function draw() {
   background(21, 43, 60);
-  translate(width / 2, height);
-
+  translate(0, height / 2);
   angle = sldAngle.value();
-
-  drawFractal(600);
+  lastColor = color(89, 179, 144);
+  drawFractal(200, lastColor);
 }
 
-function drawFractal(len) {
+function drawFractal(len, lastColor) {
   if (len < 10) {
     return;
   }
@@ -27,48 +28,61 @@ function drawFractal(len) {
   let choiceColorG = random(colorsG);
   let choiceColorB = random(colorsB);
 
-  if (typeof lastColor === "undefined") {
-    lastColor = color(choiceColorR, choiceColorG, choiceColorB);
-    return lastColor;
-  }
+  firstColor = lastColor;
+  lastColor = color(choiceColorR, choiceColorG, choiceColorB);
 
-  choiceColorR = random(colorsR);
-  choiceColorG = random(colorsG);
-  choiceColorB = random(colorsB);
-
-  let currentColor = color(choiceColorR, choiceColorG, choiceColorB);
-
-  let interA = lerpColor(lastColor, currentColor, 0.33);
-  let interB = lerpColor(lastColor, currentColor, 0.66);
+  let interA = lerpColor(firstColor, lastColor, 0.33);
+  let interB = lerpColor(firstColor, lastColor, 0.66);
 
   noStroke();
 
-  fill(lastColor);
-  rect(0, 0, 10, -len * 0.25);
+  fill(firstColor);
+  rect(0 - 5, 0, 10, -len * 0.25);
 
   translate(0, -len * 0.25);
   fill(interA);
-  rect(0, 0, 10, -len * 0.25);
+  rect(0 - 5, 0, 10, -len * 0.25);
 
   translate(0, -len * 0.25);
   fill(interB);
-  rect(0, 0, 10, -len * 0.25);
+  rect(0 - 5, 0, 10, -len * 0.25);
 
   translate(0, -len * 0.25);
-  fill(currentColor);
-  rect(0, 0, 10, -len * 0.25);
-
-  lastColor = currentColor;
+  fill(lastColor);
+  rect(0 - 5, 0, 10, -len * 0.25);
 
   translate(0, -len * 0.25);
 
   push();
   rotate(angle);
-  drawFractal(len * sldSize.value());
+  drawFractal(len * sldSize.value(), lastColor);
   pop();
 
   push();
   rotate(-angle);
-  drawFractal(len * sldSize.value());
+  drawFractal(len * sldSize.value(), lastColor);
   pop();
 }
+/*
+function createRect(pX, pY, width, height, qtd) {
+  noStroke();
+
+  const palette = selectPalette(paleta_1);
+  const firstColor = random(palette);
+
+  fill(firstColor);
+  rect(pX - width / 2, pY, width, -height / qtd);
+
+  for (i = 1; i <= qtd; i++) {
+    rect(pX - width / 2, pY, width, -height / qtd);
+  }
+}
+
+function selectPalette(palette) {
+  if (palettes.hasOwnProperty(palette)) {
+    return palette;
+  } else {
+    return console.log("Não existe uma paleta com este nome!");
+  }
+}
+  */
