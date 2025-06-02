@@ -1,7 +1,5 @@
-const palettes = require("./palettes");
-
 function setup() {
-  createCanvas(2000, 1575);
+  createCanvas(1000, 1000, WEBGL);
   frameRate(10);
   angleMode(DEGREES);
   sldAngle = createSlider(0, 90, 45, 5);
@@ -12,64 +10,39 @@ function draw() {
   background(21, 43, 60);
   translate(0, height / 2);
   angle = sldAngle.value();
-
-  drawFractal(600);
+  drawFractal(200);
 }
 
-function drawFractal(len, lastColor) {
+function drawFractal(len) {
   if (len < 10) {
     return;
   }
 
-  let colorsR = [89, 240, 228, 227];
-  let colorsG = [179, 221, 124, 45];
-  let colorsB = [144, 170, 93, 64];
-  let choiceColorR = random(colorsR);
-  let choiceColorG = random(colorsG);
-  let choiceColorB = random(colorsB);
-
-  if (typeof lastColor === "undefined") {
-    lastColor = color(choiceColorR, choiceColorG, choiceColorB);
-    return lastColor;
-  }
-
-  choiceColorR = random(colorsR);
-  choiceColorG = random(colorsG);
-  choiceColorB = random(colorsB);
-
-  let currentColor = color(choiceColorR, choiceColorG, choiceColorB);
-
-  let interA = lerpColor(lastColor, currentColor, 0.33);
-  let interB = lerpColor(lastColor, currentColor, 0.66);
-
-  noStroke();
-
-  fill(lastColor);
-  rect(0, 0, 10, -len * 0.25);
-
-  translate(0, -len * 0.25);
-  fill(interA);
-  rect(0, 0, 10, -len * 0.25);
-
-  translate(0, -len * 0.25);
-  fill(interB);
-  rect(0, 0, 10, -len * 0.25);
-
-  translate(0, -len * 0.25);
-  fill(currentColor);
-  rect(0, 0, 10, -len * 0.25);
-
-  lastColor = currentColor;
-
-  translate(0, -len * 0.25);
+  createRect(0, 0, 5, len, 20);
 
   push();
   rotate(angle);
-  drawFractal(len * sldSize.value(), lastColor);
+  drawFractal(len * sldSize.value());
   pop();
 
   push();
   rotate(-angle);
-  drawFractal(len * sldSize.value(), lastColor);
+  drawFractal(len * sldSize.value());
   pop();
+}
+
+function createRect(pX, pY, width, height, qtd) {
+  noStroke();
+
+  for (i = 1; i <= qtd; i++) {
+    fill(randomColor(), randomColor(), randomColor());
+
+    rect(pX - width / 2, pY, width, -height / qtd);
+    translate(pX, -height / qtd);
+  }
+  return;
+}
+
+function randomColor() {
+  return Math.floor(random(0, 255));
 }
